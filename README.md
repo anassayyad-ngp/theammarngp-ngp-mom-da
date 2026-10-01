@@ -1,5 +1,5 @@
 <h1 align="center">📊 E-Commerce Monthly Revenue Growth & Performance Intelligence</h1>
-<h3 align="center">A Governed SQL, Python & Tableau Revenue Analytics Engagement</h3>
+
 
 <p align="center">
   <img src="banner.png" alt="Revenue Intelligence Banner" width="100%" />

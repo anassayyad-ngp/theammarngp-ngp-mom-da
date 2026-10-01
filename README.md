@@ -2,7 +2,7 @@
 <h3 align="center">A Governed SQL, Python & Tableau Revenue Analytics Engagement</h3>
 
 <p align="center">
-  <img src="assets/banner.png" alt="Revenue Intelligence Banner" width="100%" />
+  <img src="banner.png" alt="Revenue Intelligence Banner" width="100%" />
 </p>
 
 <p align="center">
@@ -51,7 +51,7 @@ Analyzing **23 consecutive months of sales data** (October 2016 through August 2
 - **Latest MoM Growth:** `-4.00%` (August 2018; 1-month dip following +0.53% in July 2018)
 - **Max Consecutive Decline Streak:** **1 month** (No multi-month contraction anywhere in the 23-month history)
 
-**Full Executive Report:** [`reports/executive_report.md`](reports/executive_report.md) · **Executive Presentation Deck:** [`reports/presentation.pdf`](reports/presentation.pdf)
+**Full Executive Report:** [`reports/executive_report.md`](executive_report.md) · **Executive Presentation Deck:** [`reports/presentation.pdf`](presentation.pdf)
 
 ---
 
@@ -61,7 +61,7 @@ Analyzing **23 consecutive months of sales data** (October 2016 through August 2
 > **Data Transparency Disclosure**
 > The source extract (`data/raw/monthly_revenue_raw.csv`) contains two primary fields: `sales_month` and `current_month_revenue` across 23 monthly records. Order-level attributes (Order ID, Order Count, Unit Prices, customer IDs) are **not present in the raw source**.
 >
-> Consequently, **Order Count, Order Growth %, and Average Order Value (AOV) are strictly out of scope**. Rather than inventing synthetic order counts, this constraint is documented transparently across [`docs/assumptions.md`](docs/assumptions.md) and [`sql/03_analysis/05_orders_and_aov_NOT_AVAILABLE.sql`](sql/03_analysis/05_orders_and_aov_NOT_AVAILABLE.sql). All remaining core metrics—MoM %, YoY %, Cumulative Revenue, Gaps-and-Islands streak analysis, and Rolling Averages—are engineered at full scale.
+> Consequently, **Order Count, Order Growth %, and Average Order Value (AOV) are strictly out of scope**. Rather than inventing synthetic order counts, this constraint is documented transparently across [`docs/assumptions.md`](assumptions.md) and [`sql/03_analysis/05_orders_and_aov_NOT_AVAILABLE.sql`](05_orders_and_aov_NOT_AVAILABLE.sql). All remaining core metrics—MoM %, YoY %, Cumulative Revenue, Gaps-and-Islands streak analysis, and Rolling Averages—are engineered at full scale.
 
 ---
 
@@ -81,21 +81,21 @@ Leadership required a reliable, centralized data asset to answer key financial p
 
 | Metric Name | Mathematical & SQL Definition | Business Purpose | Reference Script |
 |---|---|---|---|
-| **Current Month Revenue** | `SUM(current_month_revenue)` | Measures total top-line revenue per monthly window | [`sql/03_analysis/01_monthly_revenue.sql`](sql/03_analysis/01_monthly_revenue.sql) |
-| **MoM Growth %** | `(Current - LAG(Current)) / LAG(Current) * 100` | Tracks month-over-month percentage velocity | [`sql/03_analysis/02_mom_growth.sql`](sql/03_analysis/02_mom_growth.sql) |
-| **YoY Growth %** | `(Current - LAG(Current, 12)) / LAG(Current, 12) * 100` | Evaluates annual performance comparison (Months 13+) | [`sql/03_analysis/03_yoy_growth.sql`](sql/03_analysis/03_yoy_growth.sql) |
-| **Running Revenue** | `SUM(current_month_revenue) OVER (ORDER BY sales_month)` | Calculates cumulative platform lifetime revenue | [`sql/03_analysis/04_running_revenue.sql`](sql/03_analysis/04_running_revenue.sql) |
-| **3-Month Rolling Avg** | `AVG(current_month_revenue) OVER (ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)` | Smooths monthly noise to establish baseline trend | [`sql/03_analysis/06_growth_diagnostics.sql`](sql/03_analysis/06_growth_diagnostics.sql) |
-| **Decline Streak** | Gaps-and-Islands count of consecutive MoM negative months | Flags active contraction risks requiring intervention | [`sql/04_business_cases/01_revenue_decline_detection.sql`](sql/04_business_cases/01_revenue_decline_detection.sql) |
+| **Current Month Revenue** | `SUM(current_month_revenue)` | Measures total top-line revenue per monthly window | [`sql/03_analysis/01_monthly_revenue.sql`](01_monthly_revenue.sql) |
+| **MoM Growth %** | `(Current - LAG(Current)) / LAG(Current) * 100` | Tracks month-over-month percentage velocity | [`sql/03_analysis/02_mom_growth.sql`](02_mom_growth.sql) |
+| **YoY Growth %** | `(Current - LAG(Current, 12)) / LAG(Current, 12) * 100` | Evaluates annual performance comparison (Months 13+) | [`sql/03_analysis/03_yoy_growth.sql`](03_yoy_growth.sql) |
+| **Running Revenue** | `SUM(current_month_revenue) OVER (ORDER BY sales_month)` | Calculates cumulative platform lifetime revenue | [`sql/03_analysis/04_running_revenue.sql`](04_running_revenue.sql) |
+| **3-Month Rolling Avg** | `AVG(current_month_revenue) OVER (ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)` | Smooths monthly noise to establish baseline trend | [`sql/03_analysis/06_growth_diagnostics.sql`](06_growth_diagnostics.sql) |
+| **Decline Streak** | Gaps-and-Islands count of consecutive MoM negative months | Flags active contraction risks requiring intervention | [`sql/04_business_cases/01_revenue_decline_detection.sql`](01_revenue_decline_detection.sql) |
 
-Full documentation: [`docs/metric_definitions.md`](docs/metric_definitions.md)
+Full documentation: [`docs/metric_definitions.md`](metric_definitions.md)
 
 ---
 
 ## 🏗️ Technical Architecture & Pipeline
 
 <p align="center">
-  <img src="assets/architecture.png" alt="Technical Pipeline Architecture" width="90%" />
+  <img src="architecture.png" alt="Technical Pipeline Architecture" width="90%" />
 </p>
 
 The analytics engine processes raw extracts through a 5-stage governed workflow:
@@ -105,7 +105,7 @@ The analytics engine processes raw extracts through a 5-stage governed workflow:
 4. **Python Reconciliations:** Perform independent mathematical verification across 5 Jupyter Notebooks (`python/`).
 5. **Dashboard Presentation Layer:** Export reconciled extracts to Tableau Desktop (`dashboard/tableau/revenue_intelligence.twbx`).
 
-Full architecture specification: [`docs/architecture.md`](docs/architecture.md)
+Full architecture specification: [`docs/architecture.md`](architecture.md)
 
 ---
 
@@ -144,18 +144,18 @@ sql/
 
 A 5-notebook Jupyter pipeline independently executes data loading, statistical validation, exploratory analysis, growth modeling, and dashboard export:
 
-- [`01_data_loading.ipynb`](python/01_data_loading.ipynb): Ingests raw data and verifies file encoding & schemas.
-- [`02_data_validation.ipynb`](python/02_data_validation.ipynb): Reconciles row counts and date continuous bounds.
-- [`03_revenue_eda.ipynb`](python/03_revenue_eda.ipynb): Conducts summary statistics, distribution analysis, and outlier detection.
-- [`04_growth_analysis.ipynb`](python/04_growth_analysis.ipynb): Re-computes MoM %, YoY %, and 3-month rolling trends independently.
-- [`05_export_dashboard_data.ipynb`](python/05_export_dashboard_data.ipynb): Exports finalized extract to [`data/processed/tableau_extract.csv`](data/processed/tableau_extract.csv).
+- [`01_data_loading.ipynb`](01_data_loading.ipynb): Ingests raw data and verifies file encoding & schemas.
+- [`02_data_validation.ipynb`](02_data_validation.ipynb): Reconciles row counts and date continuous bounds.
+- [`03_revenue_eda.ipynb`](03_revenue_eda.ipynb): Conducts summary statistics, distribution analysis, and outlier detection.
+- [`04_growth_analysis.ipynb`](04_growth_analysis.ipynb): Re-computes MoM %, YoY %, and 3-month rolling trends independently.
+- [`05_export_dashboard_data.ipynb`](05_export_dashboard_data.ipynb): Exports finalized extract to [`data/processed/tableau_extract.csv`](tableau_extract.csv).
 
 ---
 
 ## 🌐 Tableau Dashboard & Visual Analytics
 
 <p align="center">
-  <img src="assets/dashboard-preview.png" alt="Revenue Intelligence Tableau Dashboard Preview" width="100%" />
+  <img src="dashboard-preview.png" alt="Revenue Intelligence Tableau Dashboard Preview" width="100%" />
 </p>
 
 ### Dashboard Features & Structure:
@@ -171,21 +171,21 @@ A 5-notebook Jupyter pipeline independently executes data loading, statistical v
 - **Revenue vs. Rolling Trend:** Diagnostic chart shading periods above or below trend baseline.
 
 <p align="center">
-  <img src="assets/revenue-trend.png" alt="Monthly Revenue Trend Analysis" width="90%" />
+  <img src="revenue-trend.png" alt="Monthly Revenue Trend Analysis" width="90%" />
 </p>
 
 ### Tableau Deliverables:
-- **Packaged Workbook:** [`dashboard/tableau/revenue_intelligence.twbx`](dashboard/tableau/revenue_intelligence.twbx) (Self-contained with data extract)
-- **Unpackaged XML Workbook:** [`dashboard/tableau/revenue_intelligence.twb`](dashboard/tableau/revenue_intelligence.twb)
-- **Calculated Fields Specification:** [`dashboard/tableau/calculated_fields.md`](dashboard/tableau/calculated_fields.md)
-- **Dashboard Audit & QA Checklist:** [`dashboard/tableau/dashboard_audit.md`](dashboard/tableau/dashboard_audit.md)
+- **Packaged Workbook:** [`dashboard/tableau/revenue_intelligence.twbx`](revenue_intelligence.twbx) (Self-contained with data extract)
+- **Unpackaged XML Workbook:** [`dashboard/tableau/revenue_intelligence.twb`](revenue_intelligence.twb)
+- **Calculated Fields Specification:** [`dashboard/tableau/calculated_fields.md`](calculated_fields.md)
+- **Dashboard Audit & QA Checklist:** [`dashboard/tableau/dashboard_audit.md`](dashboard_audit.md)
 
 ---
 
 ## 💡 Key Business Insights
 
 <p align="center">
-  <img src="assets/insights-preview.png" alt="Key Business Insights Summary" width="90%" />
+  <img src="insights-preview.png" alt="Key Business Insights Summary" width="90%" />
 </p>
 
 1. **Ramp-and-Plateau Structure:** Early revenue climbed rapidly from `$43,000` (Oct 2016) to `$1,027,013` (Nov 2017), stabilizing in an `$861,000–$1,061,000` monthly band through Aug 2018.
@@ -194,7 +194,7 @@ A 5-notebook Jupyter pipeline independently executes data loading, statistical v
 4. **No Sustained Contraction:** The longest consecutive monthly decline across all 23 months is **1 month**. The latest August 2018 dip (-4.00%) follows a positive July 2018 (+0.53%) and represents normal variance.
 5. **Flat Recent Performance:** Last 3 months (Jun–Aug 2018) averaged `$1,022,829` vs. `$1,039,333` in the prior 3 months (Mar–May 2018)—a slight `-1.59%` variance, confirming stability.
 
-Full analytical writeup: [`analysis/key_insights.md`](analysis/key_insights.md) · PDF Version: [`analysis/key_insights.pdf`](analysis/key_insights.pdf)
+Full analytical writeup: [`analysis/key_insights.md`](key_insights.md) · PDF Version: [`analysis/key_insights.pdf`](key_insights.pdf)
 
 ---
 
